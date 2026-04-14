@@ -1,0 +1,75 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile and settings",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string", "format": "uri" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "settings": {
+          "type": "object",
+          "properties": {
+            "testLength": { "type": "number" }
+          }
+        }
+      },
+      "required": ["uid", "email", "createdAt"]
+    },
+    "TypingSession": {
+      "title": "Typing Session",
+      "description": "A single typing test session",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "wpm": { "type": "number" },
+        "accuracy": { "type": "number" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "testLength": { "type": "number" },
+        "keystrokes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "char": { "type": "string" },
+              "delay": { "type": "number" },
+              "isError": { "type": "boolean" }
+            }
+          }
+        }
+      },
+      "required": ["uid", "wpm", "accuracy", "timestamp"]
+    },
+    "UserMetric": {
+      "title": "User Metric",
+      "description": "Aggregated metrics for a user",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "avgWpm": { "type": "number" },
+        "maxWpm": { "type": "number" },
+        "avgAccuracy": { "type": "number" },
+        "totalTests": { "type": "number" },
+        "lastUpdated": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "avgWpm", "maxWpm", "avgAccuracy", "totalTests", "lastUpdated"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "sessions/{sessionId}": {
+      "schema": "TypingSession",
+      "description": "Typing test results"
+    },
+    "metrics/{userId}": {
+      "schema": "UserMetric",
+      "description": "Aggregated user stats"
+    }
+  }
+}

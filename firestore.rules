@@ -1,0 +1,143 @@
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: users
+// Document ID: {userId}
+// Fields:
+//   - uid: string (required) - User's unique ID
+//   - email: string (required) - User's email
+//   - displayName: string (optional) - User's display name
+//   - photoURL: string (optional) - User's photo URL
+//   - createdAt: timestamp (required) - Account creation time
+//   - settings: map (optional) - User preferences
+//
+// Collection: sessions
+// Document ID: {sessionId}
+// Fields:
+//   - uid: string (required) - User's unique ID
+//   - wpm: number (required) - Words per minute
+//   - accuracy: number (required) - Accuracy percentage
+//   - timestamp: timestamp (required) - Test completion time
+//   - testLength: number (required) - Number of words in test
+//   - keystrokes: array (optional) - Detailed keystroke data
+//
+// Collection: metrics
+// Document ID: {userId}
+// Fields:
+//   - uid: string (required) - User's unique ID
+//   - avgWpm: number (required) - Average WPM
+//   - maxWpm: number (required) - Maximum WPM
+//   - avgAccuracy: number (required) - Average accuracy
+//   - totalTests: number (required) - Total number of tests completed
+//   - lastUpdated: timestamp (required) - Last update time
+//
+// ===============================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.uid;
+    }
+
+    function uidUnchanged() {
+      return !('uid' in request.resource.data) || request.resource.data.uid == request.auth.uid;
+    }
+
+    function uidNotModified() {
+      return !('uid' in request.resource.data) || request.resource.data.uid == resource.data.uid;
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidUrl(url) {
+      return url is string && (url.matches("^https://.*") || url.matches("^http://.*"));
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+         (request.auth.token.email == "biancamalhotra2004@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidUser(data) {
+      return data.keys().hasOnly(['uid', 'email', 'displayName', 'photoURL', 'createdAt', 'settings', 'role']) &&
+             data.uid is string && data.uid.size() > 0 &&
+             data.email is string && isValidEmail(data.email) &&
+             (data.displayName == null || (data.displayName is string && data.displayName.size() < 100)) &&
+             (data.photoURL == null || isValidUrl(data.photoURL)) &&
+             data.createdAt is timestamp;
+    }
+
+    function isValidSession(data) {
+      return data.keys().hasOnly(['uid', 'wpm', 'accuracy', 'timestamp', 'testLength', 'keystrokes']) &&
+             data.uid is string && data.uid == request.auth.uid &&
+             data.wpm is number && data.wpm >= 0 && data.wpm < 500 &&
+             data.accuracy is number && data.accuracy >= 0 && data.accuracy <= 100 &&
+             data.timestamp is timestamp &&
+             data.testLength is number && data.testLength > 0 &&
+             (data.keystrokes == null || data.keystrokes is list);
+    }
+
+    function isValidMetric(data) {
+      return data.keys().hasOnly(['uid', 'avgWpm', 'maxWpm', 'avgAccuracy', 'totalTests', 'lastUpdated']) &&
+             data.uid is string && data.uid == request.auth.uid &&
+             data.avgWpm is number && data.maxWpm is number &&
+             data.avgAccuracy is number && data.totalTests is number &&
+             data.lastUpdated is timestamp;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && isValidUser(request.resource.data) && request.resource.data.role == 'user';
+      allow update: if isOwner(userId) && isValidUser(request.resource.data) && 
+                      request.resource.data.role == resource.data.role &&
+                      request.resource.data.createdAt == resource.data.createdAt;
+    }
+
+    match /sessions/{sessionId} {
+      allow read: if isDocOwner() || isAdmin();
+      allow create: if isAuthenticated() && isValidSession(request.resource.data);
+      allow update, delete: if false; // Sessions are immutable
+    }
+
+    match /metrics/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create, update: if isOwner(userId) && isValidMetric(request.resource.data);
+      allow delete: if false;
+    }
+
+    // Default deny
+    match /{path=**} {
+      allow read, write: if false;
+    }
+  }
+}
