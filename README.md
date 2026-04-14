@@ -1,42 +1,80 @@
-# BrainType: High-Performance Typing Gym
+# 🧠 BrainType: High-Performance Typing Gym for Developers
 
-A high-performance training platform where developers master speed, accuracy, and technical vocabulary under pressure.
+[![React](https://img.shields.io/badge/React-19-blue.svg)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue.svg)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC.svg)](https://tailwindcss.com/)
+[![Firebase](https://img.shields.io/badge/Firebase-Auth%20%26%20Firestore-FFCA28.svg)](https://firebase.google.com/)
 
-## 🚀 Getting Started in VS Code
+**BrainType** is a high-performance training platform designed for developers to master speed, accuracy, and technical vocabulary under pressure. Inspired by Monkeytype but built for the modern engineer, it combines execution with cognitive focus.
 
-### 1. Prerequisites
-- **Node.js**: Install [Node.js](https://nodejs.org/) (v18 or higher recommended).
-- **VS Code**: Install [Visual Studio Code](https://code.visualstudio.com/).
+---
 
-### 2. Setup
-1. **Export the Project**: Use the **Settings** menu in AI Studio to **Export to ZIP** or **Export to GitHub**.
-2. **Open in VS Code**: Extract the ZIP and open the folder in VS Code.
-3. **Install Dependencies**:
-   Open the VS Code terminal (`Ctrl+` ` ` or `Cmd+` ` `) and run:
-   ```bash
-   npm install
-   ```
+## ✨ Features
 
-### 3. Environment Variables
-1. Create a `.env` file in the root directory.
-2. Copy the contents of `.env.example` into `.env`.
-3. Since this app uses Firebase, you will need to provide your own Firebase configuration in `firebase-applet-config.json` if you want to use the cloud features (Auth, Firestore) locally.
+### 🎯 Training Modes
+- **Code Mode**: Master the syntax of modern development with real-world snippets (React, Git, CSS, etc.).
+- **Facts Mode**: Build muscle memory while learning interesting industry trivia.
+- **Quotes Mode**: Focus on rhythm and flow with inspirational quotes from tech leaders.
+- **Words Mode**: Classic high-frequency word drills for raw speed.
 
-### 4. Run the Project
-Start the development server:
-```bash
-npm run dev
-```
-The app will be available at `http://localhost:3000`.
+### 🧘 Focus & Immersion
+- **Zen Mode**: Eliminate distractions by hiding all stats and UI elements during the test.
+- **Dynamic Aura**: A speed-reactive background visualization that intensifies as your WPM increases.
+- **Violet Palette**: Custom-crafted "Light Purple" and "Dark Purple" themes optimized for long sessions.
+
+### 📊 Performance Analytics
+- **Performance Forecast**: Uses **TensorFlow.js** to predict your potential WPM for the next session based on your history.
+- **Problem Key Detection**: Identifies specific keys that slow you down or cause errors.
+- **Fatigue Alerts**: Detects speed drops and suggests breaks to maintain peak performance.
+- **Buddy System**: A visual ghost caret that moves at your target speed to push your limits.
+
+---
 
 ## 🛠 Tech Stack
+
 - **Frontend**: React 19, TypeScript, Vite
 - **Styling**: Tailwind CSS 4
 - **Animations**: Framer Motion
-- **Database/Auth**: Firebase
+- **Database/Auth**: Firebase (Auth & Firestore)
 - **Analytics**: TensorFlow.js, Recharts
+- **Icons**: Lucide React
 
-## 📜 Scripts
-- `npm run dev`: Starts the development server.
-- `npm run build`: Builds the app for production.
-- `npm run lint`: Runs TypeScript type checking.
+---
+
+## 🚀 Getting Started
+
+### 1. Prerequisites
+- **Node.js** (v18 or higher)
+- **npm** or **yarn**
+
+### 2. Installation
+```bash
+# Clone the repository
+git clone https://github.com/Bianca-Malhotra/braintype.git
+
+# Navigate to the project folder
+cd braintype
+
+# Install dependencies
+npm install
+```
+
+### 3. Configuration
+1. Create a `.env` file in the root directory.
+2. Copy the contents of `.env.example` into `.env`.
+3. Update `firebase-applet-config.json` with your own Firebase project credentials.
+
+### 4. Development
+```bash
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) to view the app.
+
+---
+
+## 👤 Developer
+
+**Bianca Malhotra**
+
+## 📜 License
+© 2026 Bianca Malhotra. Built with ❤️ for the developer community.
