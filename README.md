@@ -11,8 +11,6 @@ A precision training platform designed for developers to master **speed, accurac
 - Consistency across sessions
 
 
-## 🚀 Getting Started
-
 ### 1. Prerequisites
 - Install **Node.js** (v18+)
 - Install **VS Code** (or any modern IDE)
