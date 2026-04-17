@@ -1,42 +1,69 @@
-# BrainType: High-Performance Typing Gym
+BrainType — High-Performance Typing Gym
 
-A high-performance training platform where developers master speed, accuracy, and technical vocabulary under pressure.
+A precision training platform designed for developers to master speed, accuracy, and technical fluency under pressure.
+Train like you code: fast, focused, and unforgiving.
 
-## 🚀 Getting Started in VS Code
+⚡ What is BrainType?
 
-### 1. Prerequisites
-- **Node.js**: Install [Node.js](https://nodejs.org/) (v18 or higher recommended).
-- **VS Code**: Install [Visual Studio Code](https://code.visualstudio.com/).
+BrainType isn’t a generic typing tester—it’s a cognitive performance system built for engineers.
 
-### 2. Setup
-1. **Export the Project**: Use the **Settings** menu in AI Studio to **Export to ZIP** or **Export to GitHub**.
-2. **Open in VS Code**: Extract the ZIP and open the folder in VS Code.
-3. **Install Dependencies**:
-   Open the VS Code terminal (`Ctrl+` ` ` or `Cmd+` ` `) and run:
-   ```bash
-   npm install
-   ```
+It targets:
 
-### 3. Environment Variables
-1. Create a `.env` file in the root directory.
-2. Copy the contents of `.env.example` into `.env`.
-3. Since this app uses Firebase, you will need to provide your own Firebase configuration in `firebase-applet-config.json` if you want to use the cloud features (Auth, Firestore) locally.
+Speed under cognitive load
+Accuracy with complex syntax
+Technical vocabulary recall
+Consistency across sessions
 
-### 4. Run the Project
-Start the development server:
-```bash
+Think: typing meets deliberate practice.
+
+🚀 Getting Started
+1. Prerequisites
+Install Node.js (v18+)
+Install VS Code (or any modern IDE)
+2. Setup
+# Clone or extract the project
+npm install
+3. Environment Variables
+
+Create a .env file in the root:
+
+cp .env.example .env
+
+If using Firebase locally:
+
+Add your config to firebase-applet-config.json
+4. Run the App
 npm run dev
-```
-The app will be available at `http://localhost:3000`.
 
-## 🛠 Tech Stack
-- **Frontend**: React 19, TypeScript, Vite
-- **Styling**: Tailwind CSS 4
-- **Animations**: Framer Motion
-- **Database/Auth**: Firebase
-- **Analytics**: TensorFlow.js, Recharts
+App runs at:
 
-## 📜 Scripts
-- `npm run dev`: Starts the development server.
-- `npm run build`: Builds the app for production.
-- `npm run lint`: Runs TypeScript type checking.
+http://localhost:3000
+🧠 Core Philosophy
+
+BrainType is built on three principles:
+
+Deliberate Practice > Passive Usage
+Pressure Builds Skill
+Measurement Drives Improvement
+🛠 Tech Stack
+Layer	Technology
+Frontend	React 19 + TypeScript + Vite
+Styling	Tailwind CSS 4
+Animations	Framer Motion
+Backend/Auth	Firebase
+Analytics	TensorFlow.js + Recharts
+📊 Key Features (Planned / Active)
+Real-time typing performance analytics
+Developer-focused datasets (code, APIs, logs)
+Adaptive difficulty engine
+Accuracy heatmaps & error tracking
+Cognitive load testing modes
+Authentication (Google / GitHub)
+📜 Scripts
+npm run dev      # Start development server
+npm run build    # Production build
+npm run lint     # Type + lint checks
+🧩 Vision
+
+To become the LeetCode for typing + cognition—
+where developers don’t just write code faster, but think faster under constraints.
