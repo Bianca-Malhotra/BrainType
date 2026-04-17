@@ -2,7 +2,7 @@
 
 A precision training platform designed for developers to master **speed, accuracy, and technical fluency under pressure**.  
 **Train like you code: fast, focused, and unforgiving.**
-##BrainType is not a generic typing tester. It is a **cognitive performance system** built for engineers.
+## BrainType is not a generic typing tester. It is a **cognitive performance system** built for engineers.
 
 ### It Targets
 - Speed under cognitive load
