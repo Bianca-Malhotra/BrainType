@@ -2,12 +2,7 @@
 
 A precision training platform designed for developers to master **speed, accuracy, and technical fluency under pressure**.  
 **Train like you code: fast, focused, and unforgiving.**
-
----
-
-## ⚡ What Is BrainType?
-
-BrainType is not a generic typing tester. It is a **cognitive performance system** built for engineers.
+## BrainType is not a generic typing tester. It is a **cognitive performance system** built for engineers.
 
 ### It Targets
 - Speed under cognitive load
@@ -15,9 +10,6 @@ BrainType is not a generic typing tester. It is a **cognitive performance system
 - Technical vocabulary recall
 - Consistency across sessions
 
-> Think: *typing meets deliberate practice.*
-
----
 
 ## 🚀 Getting Started
 
@@ -25,7 +17,7 @@ BrainType is not a generic typing tester. It is a **cognitive performance system
 - Install **Node.js** (v18+)
 - Install **VS Code** (or any modern IDE)
 
----
+
 
 ### 2. Setup
 
@@ -34,7 +26,7 @@ BrainType is not a generic typing tester. It is a **cognitive performance system
 npm install
 ```
 
----
+
 
 ### 3. Environment Variables
 
@@ -47,7 +39,7 @@ cp .env.example .env
 If using Firebase locally:
 - Add your config to `firebase-applet-config.json`
 
----
+
 
 ### 4. Run the App
 
