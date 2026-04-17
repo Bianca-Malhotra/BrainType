@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RefreshCw, Settings, BarChart2, User as UserIcon, AlertCircle, Clock, CheckCircle2, Ghost, LogIn } from 'lucide-react';
-import { db, auth } from '../firebase';
 import { getBuddyTargetWpm, predictNextWpm } from '../services/mlService';
-import { collection, addDoc, serverTimestamp, doc, getDoc, setDoc, updateDoc, increment } from 'firebase/firestore';
-import { User as FirebaseUser, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { AppUser } from '../types/auth';
+import { addSession, updateMetricsForSession } from '../services/localDataService';
 
 const WORDS = [
   "the", "be", "to", "of", "and", "a", "in", "that", "have", "i", "it", "for", "not", "on", "with", "he", "as", "you", "do", "at",
@@ -21,7 +20,36 @@ const QUOTES = [
   "Your time is limited, so don't waste it living someone else's life.",
   "The future belongs to those who believe in the beauty of their dreams.",
   "It does not matter how slowly you go as long as you do not stop.",
-  "Everything you've ever wanted is on the other side of fear."
+  "Everything you've ever wanted is on the other side of fear.",
+  "Success is the sum of small efforts repeated day in and day out.",
+  "Discipline is choosing between what you want now and what you want most.",
+  "Do not wait for opportunity, create it.",
+  "The best way out is always through.",
+  "Dream big and dare to fail.",
+  "Simplicity is the soul of efficiency.",
+  "Quality means doing it right when no one is looking.",
+  "Well done is better than well said.",
+  "Consistency is harder when no one is clapping for you.",
+  "Focus on progress, not perfection.",
+  "A river cuts through rock not because of power but persistence.",
+  "The expert in anything was once a beginner.",
+  "Pressure is a privilege when you are prepared.",
+  "Hard choices, easy life. Easy choices, hard life.",
+  "When you feel like quitting, remember why you started.",
+  "Talent is common. Discipline is rare.",
+  "Read deeply, think clearly, write simply.",
+  "Clarity beats complexity every time.",
+  "Slow is smooth and smooth is fast.",
+  "Train in silence and let your results make noise.",
+  "Habits decide the future before goals do.",
+  "You do not rise to your goals, you fall to your systems.",
+  "No shortcuts, just reps.",
+  "Good work compounds.",
+  "Build it better than yesterday.",
+  "Execute first, optimize second.",
+  "The obstacle is the way.",
+  "Action creates clarity.",
+  "Better every day is still better."
 ];
 
 const CODE = [
@@ -31,7 +59,36 @@ const CODE = [
   "git commit -m 'feat: add multidisciplinary modes'",
   "npm install @tensorflow/tfjs",
   "const aura = document.querySelector('.aura-bg');",
-  "Array.from({ length: 10 }).map((_, i) => i);"
+  "Array.from({ length: 10 }).map((_, i) => i);",
+  "const isValid = email.includes('@') && password.length >= 8;",
+  "function clamp(value, min, max) { return Math.min(max, Math.max(min, value)); }",
+  "const sorted = [...items].sort((a, b) => a.localeCompare(b));",
+  "const response = await axios.get('/v1/sessions');",
+  "const token = localStorage.getItem('auth_token');",
+  "const [loading, setLoading] = useState(false);",
+  "const timeoutId = setTimeout(() => setOpen(false), 1500);",
+  "const reduced = values.reduce((sum, current) => sum + current, 0);",
+  "if (!user) throw new Error('User is required');",
+  "const payload = { id: user.id, role: 'member' };",
+  "router.post('/login', async (req, res) => { res.json({ ok: true }); });",
+  "const cacheKey = `stats:${userId}`;",
+  "await db.collection('sessions').insertOne(session);",
+  "const elapsedMs = performance.now() - startRef.current;",
+  "setHistory((prev) => [nextResult, ...prev].slice(0, 20));",
+  "const hasError = form.email === '' || form.password === '';",
+  "const percent = Math.round((correct / total) * 100);",
+  "try { await save(); } catch (err) { console.error(err); }",
+  "const mode = searchParams.get('mode') || 'words';",
+  "const headers = { Authorization: `Bearer ${accessToken}` };",
+  "const randomIndex = Math.floor(Math.random() * prompts.length);",
+  "const isDark = theme === 'dark-purple';",
+  "const uniqueTags = Array.from(new Set(tags));",
+  "const regex = /^[a-z0-9_]+$/i;",
+  "const endpoint = `${baseUrl}/metrics`;",
+  "window.addEventListener('resize', handleResize);",
+  "const completed = input.length === target.length;",
+  "const next = currentView === 'home' ? 'test' : 'home';",
+  "const matrix = Array.from({ length: 3 }, () => Array(3).fill(0));"
 ];
 
 const FACTS = [
@@ -40,10 +97,63 @@ const FACTS = [
   "Bananas are berries, but strawberries are not.",
   "Octopuses have three hearts and blue blood.",
   "The Eiffel Tower can be 15 cm taller during the summer.",
-  "A single cloud can weigh more than a million pounds."
+  "A single cloud can weigh more than a million pounds.",
+  "Sharks existed before trees appeared on Earth.",
+  "Your brain uses about twenty percent of your body's energy.",
+  "Lightning is five times hotter than the surface of the Sun.",
+  "There are more possible chess games than atoms in the observable universe.",
+  "A group of flamingos is called a flamboyance.",
+  "Some bamboo species can grow almost one meter in a single day.",
+  "The fingerprints of a koala are very similar to human fingerprints.",
+  "The human nose can detect over one trillion different scents.",
+  "Hot water can freeze faster than cold water under specific conditions.",
+  "The shortest war in history lasted less than forty minutes.",
+  "Wombat poop is cube shaped.",
+  "The Pacific Ocean is wider than the Moon.",
+  "A bolt of lightning contains enough energy to toast thousands of slices of bread.",
+  "A day on Mercury lasts about fifty nine Earth days.",
+  "Crows can recognize individual human faces.",
+  "Sea otters hold hands while sleeping so they do not drift apart.",
+  "Some turtles can breathe through their rear end.",
+  "The Great Wall of China is not clearly visible from space with the naked eye.",
+  "Blue whales have hearts that can weigh as much as a small car.",
+  "The Amazon rainforest creates much of its own rainfall.",
+  "A strawberry has around two hundred seeds on its surface.",
+  "Dolphins have unique signature whistles similar to names.",
+  "Saturn could float in water because it is mostly gas and very low density.",
+  "Ants do not have lungs.",
+  "An adult human has fewer bones than a baby.",
+  "A teaspoon of neutron star matter would weigh billions of tons on Earth.",
+  "Jellyfish have existed for hundreds of millions of years.",
+  "The hottest chili peppers can be over one hundred times hotter than jalapenos.",
+  "Many languages do not use words for left and right, but for cardinal directions."
 ];
 
 type Mode = 'words' | 'quotes' | 'code' | 'facts';
+
+function buildTextFromPool(pool: string[], targetWordCount: number): string {
+  if (targetWordCount <= 0) {
+    return pool[Math.floor(Math.random() * pool.length)] || '';
+  }
+
+  let result = '';
+
+  while (result.split(/\s+/).filter(Boolean).length < targetWordCount) {
+    const next = pool[Math.floor(Math.random() * pool.length)] || '';
+    if (!next) {
+      break;
+    }
+
+    if (result.length === 0) {
+      result = next;
+    } else {
+      result += ` ${next}`;
+    }
+  }
+
+  const words = result.split(/\s+/).filter(Boolean).slice(0, targetWordCount);
+  return words.join(' ');
+}
 
 interface SessionResult {
   wpm: number;
@@ -52,63 +162,13 @@ interface SessionResult {
 }
 
 interface TypingTestProps {
-  user: FirebaseUser | null;
+  user: AppUser | null;
   onNavigate: (view: 'test' | 'analytics' | 'profile' | 'about') => void;
+  onRequireLogin: () => void;
   theme: string;
 }
 
-enum OperationType {
-  CREATE = 'create',
-  UPDATE = 'update',
-  DELETE = 'delete',
-  LIST = 'list',
-  GET = 'get',
-  WRITE = 'write',
-}
-
-interface FirestoreErrorInfo {
-  error: string;
-  operationType: OperationType;
-  path: string | null;
-  authInfo: {
-    userId: string | undefined;
-    email: string | null | undefined;
-    emailVerified: boolean | undefined;
-    isAnonymous: boolean | undefined;
-    tenantId: string | null | undefined;
-    providerInfo: {
-      providerId: string;
-      displayName: string | null;
-      email: string | null;
-      photoUrl: string | null;
-    }[];
-  }
-}
-
-function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
-  const errInfo: FirestoreErrorInfo = {
-    error: error instanceof Error ? error.message : String(error),
-    authInfo: {
-      userId: auth.currentUser?.uid,
-      email: auth.currentUser?.email,
-      emailVerified: auth.currentUser?.emailVerified,
-      isAnonymous: auth.currentUser?.isAnonymous,
-      tenantId: auth.currentUser?.tenantId,
-      providerInfo: auth.currentUser?.providerData.map(provider => ({
-        providerId: provider.providerId,
-        displayName: provider.displayName,
-        email: provider.email,
-        photoUrl: provider.photoURL
-      })) || []
-    },
-    operationType,
-    path
-  }
-  console.error('Firestore Error: ', JSON.stringify(errInfo));
-  throw new Error(JSON.stringify(errInfo));
-}
-
-export default function TypingTest({ user, onNavigate, theme }: TypingTestProps) {
+export default function TypingTest({ user, onNavigate, onRequireLogin, theme }: TypingTestProps) {
   const [text, setText] = useState("");
   const [userInput, setUserInput] = useState("");
   const [startTime, setStartTime] = useState<number | null>(null);
@@ -127,6 +187,7 @@ export default function TypingTest({ user, onNavigate, theme }: TypingTestProps)
   const [keyStats, setKeyStats] = useState<Record<string, { delay: number, errors: number, count: number }>>({});
   const [problemKeys, setProblemKeys] = useState<string[]>([]);
   const [lastKeystrokeTime, setLastKeystrokeTime] = useState<number | null>(null);
+  const [timeRemainingSeconds, setTimeRemainingSeconds] = useState(testLength);
 
   const isDark = theme === 'dark-purple';
   const textColor = isDark ? 'text-white' : 'text-violet-900';
@@ -134,6 +195,7 @@ export default function TypingTest({ user, onNavigate, theme }: TypingTestProps)
   const mutedTextColor = isDark ? 'text-white/40' : 'text-violet-900/40';
   const cardBg = isDark ? 'bg-violet-900/10 border-white/10' : 'bg-violet-50/10 border-violet-900/10';
   const settingsBg = isDark ? 'bg-violet-900/50 border-white/20' : 'bg-white/50 border-violet-900/20';
+  const isZenActive = zenMode && startTime && !isFinished;
   
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -146,16 +208,16 @@ export default function TypingTest({ user, onNavigate, theme }: TypingTestProps)
     } else {
       switch (mode) {
         case 'quotes':
-          newText = QUOTES[Math.floor(Math.random() * QUOTES.length)];
+          newText = buildTextFromPool(QUOTES, len);
           break;
         case 'code':
-          newText = CODE[Math.floor(Math.random() * CODE.length)];
+          newText = buildTextFromPool(CODE, len);
           break;
         case 'facts':
-          newText = FACTS[Math.floor(Math.random() * FACTS.length)];
+          newText = buildTextFromPool(FACTS, len);
           break;
         default:
-          newText = Array.from({ length: len }, () => WORDS[Math.floor(Math.random() * WORDS.length)]).join(" ");
+          newText = buildTextFromPool(WORDS, len);
       }
     }
     
@@ -169,6 +231,7 @@ export default function TypingTest({ user, onNavigate, theme }: TypingTestProps)
     setBuddyProgress(0);
     setKeyStats({});
     setProblemKeys([]);
+    setTimeRemainingSeconds(len);
 
     // Update predictions
     if (history.length > 0) {
@@ -179,62 +242,81 @@ export default function TypingTest({ user, onNavigate, theme }: TypingTestProps)
     }
 
     if (inputRef.current) inputRef.current.focus();
-  }, [testLength, history]);
+  }, [mode, testLength, history]);
 
   useEffect(() => {
     generateText();
   }, [generateText]);
 
+  useEffect(() => {
+    if (!startTime || isFinished) {
+      setTimeRemainingSeconds(testLength);
+    }
+  }, [testLength, startTime, isFinished]);
+
+  const completeTest = useCallback((finalWpm: number, finalAccuracy: number) => {
+    if (isFinished) {
+      return;
+    }
+
+    setIsFinished(true);
+    const result: SessionResult = { wpm: finalWpm, accuracy: finalAccuracy, timestamp: Date.now() };
+
+    if (history.length >= 3) {
+      const avgWpm = history.slice(0, 3).reduce((acc, curr) => acc + curr.wpm, 0) / 3;
+      if (finalWpm < avgWpm * 0.8) {
+        setFatigueAlert(true);
+      }
+    }
+
+    setHistory(prev => [result, ...prev].slice(0, 10));
+    saveSession(finalWpm, finalAccuracy);
+
+    const problems = Object.entries(keyStats)
+      .map(([key, stats]) => ({
+        key,
+        avgDelay: stats.delay / stats.count,
+        errorRate: stats.errors / stats.count
+      }))
+      .filter(k => k.errorRate > 0.2 || k.avgDelay > 300)
+      .sort((a, b) => b.errorRate - a.errorRate)
+      .slice(0, 5)
+      .map(k => k.key);
+
+    setProblemKeys(problems);
+  }, [history, isFinished, keyStats]);
+
+  useEffect(() => {
+    if (!isZenActive || !startTime || isFinished) {
+      return;
+    }
+
+    const interval = window.setInterval(() => {
+      const elapsed = Math.floor((performance.now() - startTime) / 1000);
+      const remaining = Math.max(testLength - elapsed, 0);
+      setTimeRemainingSeconds(remaining);
+
+      if (remaining === 0) {
+        window.clearInterval(interval);
+        completeTest(wpm, accuracy);
+      }
+    }, 200);
+
+    return () => window.clearInterval(interval);
+  }, [isZenActive, startTime, isFinished, testLength, wpm, accuracy, completeTest]);
+
   const saveSession = async (finalWpm: number, finalAccuracy: number) => {
     if (!user) return;
 
     try {
-      // Save session
-      const sessionsPath = 'sessions';
-      try {
-        await addDoc(collection(db, sessionsPath), {
-          uid: user.uid,
-          wpm: finalWpm,
-          accuracy: finalAccuracy,
-          timestamp: serverTimestamp(),
-          testLength
-        });
-      } catch (error) {
-        handleFirestoreError(error, OperationType.WRITE, sessionsPath);
-      }
-
-      // Update metrics
-      const metricsPath = `metrics/${user.uid}`;
-      try {
-        const metricsRef = doc(db, 'metrics', user.uid);
-        const metricsSnap = await getDoc(metricsRef);
-
-        if (metricsSnap.exists()) {
-          const data = metricsSnap.data();
-          const newTotal = data.totalTests + 1;
-          const newAvgWpm = (data.avgWpm * data.totalTests + finalWpm) / newTotal;
-          const newAvgAcc = (data.avgAccuracy * data.totalTests + finalAccuracy) / newTotal;
-          
-          await updateDoc(metricsRef, {
-            avgWpm: newAvgWpm,
-            avgAccuracy: newAvgAcc,
-            maxWpm: Math.max(data.maxWpm, finalWpm),
-            totalTests: increment(1),
-            lastUpdated: serverTimestamp()
-          });
-        } else {
-          await setDoc(metricsRef, {
-            uid: user.uid,
-            avgWpm: finalWpm,
-            maxWpm: finalWpm,
-            avgAccuracy: finalAccuracy,
-            totalTests: 1,
-            lastUpdated: serverTimestamp()
-          });
-        }
-      } catch (error) {
-        handleFirestoreError(error, OperationType.WRITE, metricsPath);
-      }
+      addSession({
+        uid: user.id,
+        wpm: finalWpm,
+        accuracy: finalAccuracy,
+        timestamp: Date.now(),
+        testLength,
+      });
+      updateMetricsForSession(user.id, finalWpm, finalAccuracy);
     } catch (error) {
       console.error("Error saving session:", error);
     }
@@ -270,47 +352,23 @@ export default function TypingTest({ user, onNavigate, theme }: TypingTestProps)
     }
     setLastKeystrokeTime(now);
 
+    let currentWpm = wpm;
+    let currentAccuracy = accuracy;
+
     // Calculate WPM
     if (value.length > 0 && startTime) {
       const timeElapsed = (now - startTime) / 1000 / 60; // in minutes
       const wordsTyped = value.length / 5;
-      const currentWpm = Math.round(wordsTyped / timeElapsed);
+      currentWpm = Math.round(wordsTyped / timeElapsed);
       setWpm(currentWpm);
 
       const errors = value.split("").filter((char, i) => char !== text[i]).length;
-      setAccuracy(Math.round(((value.length - errors) / value.length) * 100));
+      currentAccuracy = Math.round(((value.length - errors) / value.length) * 100);
+      setAccuracy(currentAccuracy);
     }
 
     if (value.length === text.length) {
-      setIsFinished(true);
-      const result: SessionResult = { wpm, accuracy, timestamp: Date.now() };
-      
-      // Fatigue Detection
-      if (history.length >= 3) {
-        const avgWpm = history.slice(0, 3).reduce((acc, curr) => acc + curr.wpm, 0) / 3;
-        if (wpm < avgWpm * 0.8) {
-          setFatigueAlert(true);
-        }
-      }
-
-      setHistory(prev => [result, ...prev].slice(0, 10));
-      
-      // Save to Firebase
-      saveSession(wpm, accuracy);
-
-      // Identify Problem Keys (high error rate or high delay)
-      const problems = Object.entries(keyStats)
-        .map(([key, stats]) => ({
-          key,
-          avgDelay: stats.delay / stats.count,
-          errorRate: stats.errors / stats.count
-        }))
-        .filter(k => k.errorRate > 0.2 || k.avgDelay > 300)
-        .sort((a, b) => b.errorRate - a.errorRate)
-        .slice(0, 5)
-        .map(k => k.key);
-      
-      setProblemKeys(problems);
+      completeTest(currentWpm, currentAccuracy);
     }
   };
 
@@ -386,6 +444,14 @@ export default function TypingTest({ user, onNavigate, theme }: TypingTestProps)
     });
   };
 
+  const formatElapsed = (seconds: number) => {
+    const mins = Math.floor(seconds / 60)
+      .toString()
+      .padStart(2, '0');
+    const secs = (seconds % 60).toString().padStart(2, '0');
+    return `${mins}:${secs}`;
+  };
+
   return (
     <div className={`max-w-4xl mx-auto px-4 py-12 font-sans ${textColor}`}>
       {/* Speed-Reactive Aura Intensity */}
@@ -397,7 +463,7 @@ export default function TypingTest({ user, onNavigate, theme }: TypingTestProps)
       `}} />
 
       {/* Header Stats */}
-      <div className={`flex justify-between items-end mb-12 transition-opacity duration-500 ${zenMode && startTime && !isFinished ? 'opacity-0' : 'opacity-100'}`}>
+      <div className={`flex justify-between items-end mb-12 transition-opacity duration-500 ${isZenActive ? 'opacity-0' : 'opacity-100'}`}>
         <div className="flex gap-12">
           <div className="flex flex-col">
             <span className="text-[10px] uppercase tracking-widest opacity-50 font-bold">WPM</span>
@@ -454,13 +520,10 @@ export default function TypingTest({ user, onNavigate, theme }: TypingTestProps)
             <div className="w-8 h-8 bg-solar-blue/10 rounded-lg flex items-center justify-center text-solar-blue">
               <LogIn size={16} />
             </div>
-            <p className="text-sm font-medium opacity-80">Sign in with Google to save your progress and unlock ML predictions.</p>
+            <p className="text-sm font-medium opacity-80">Sign in to save your progress and unlock ML predictions.</p>
           </div>
           <button 
-            onClick={() => {
-              const provider = new GoogleAuthProvider();
-              signInWithPopup(auth, provider);
-            }}
+            onClick={onRequireLogin}
             className="text-xs font-bold uppercase tracking-widest text-solar-blue hover:underline"
           >
             Sign In Now
@@ -497,7 +560,7 @@ export default function TypingTest({ user, onNavigate, theme }: TypingTestProps)
               </div>
 
               <div className="flex items-center gap-6">
-                <span className={`text-[10px] uppercase tracking-widest font-bold opacity-50 ${textColor}`}>Test Length:</span>
+                <span className={`text-[10px] uppercase tracking-widest font-bold opacity-50 ${textColor}`}>Test Length (Words):</span>
                 <div className="flex gap-6">
                   {[15, 25, 50, 100].map(len => (
                     <button
@@ -523,6 +586,10 @@ export default function TypingTest({ user, onNavigate, theme }: TypingTestProps)
                   {zenMode ? 'Enabled' : 'Disabled'}
                 </button>
               </div>
+
+              <p className={`text-xs leading-relaxed ${mutedTextColor}`}>
+                Zen Mode hides non-essential UI while you type, helping you stay focused. The countdown equals your selected test length in seconds (15, 25, 50, or 100).
+              </p>
             </div>
           </motion.div>
         )}
@@ -530,7 +597,7 @@ export default function TypingTest({ user, onNavigate, theme }: TypingTestProps)
 
       {/* Fatigue Alert */}
       <AnimatePresence>
-        {fatigueAlert && isFinished && (
+        {!isZenActive && fatigueAlert && isFinished && (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -546,6 +613,18 @@ export default function TypingTest({ user, onNavigate, theme }: TypingTestProps)
 
       {/* Typing Area */}
       <div className="relative mb-24 min-h-[120px]">
+        {isZenActive && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex justify-center mb-8"
+          >
+            <div className={`px-5 py-2 rounded-full border text-sm font-black tracking-[0.2em] ${isDark ? 'bg-violet-900/30 border-white/15 text-white/90' : 'bg-violet-100/70 border-violet-300 text-violet-900'}`}>
+              ZEN TIMER {formatElapsed(timeRemainingSeconds)}
+            </div>
+          </motion.div>
+        )}
+
         <div 
           className="relative text-3xl leading-relaxed cursor-text select-none mb-12 min-h-[160px] outline-none font-typing"
           onClick={() => inputRef.current?.focus()}
@@ -566,6 +645,7 @@ export default function TypingTest({ user, onNavigate, theme }: TypingTestProps)
       </div>
 
       {/* Problem Keys & History */}
+      {!isZenActive && (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
         <AnimatePresence>
           {isFinished && problemKeys.length > 0 && (
@@ -617,8 +697,10 @@ export default function TypingTest({ user, onNavigate, theme }: TypingTestProps)
           </motion.div>
         )}
       </div>
+      )}
 
       {/* Bottom Nav */}
+      {!isZenActive && (
       <div className={`mt-24 flex justify-center gap-12 text-sm ${textColor}`}>
         <div 
           onClick={() => onNavigate('analytics')}
@@ -642,6 +724,7 @@ export default function TypingTest({ user, onNavigate, theme }: TypingTestProps)
           <span>About</span>
         </div>
       </div>
+      )}
     </div>
   );
 }

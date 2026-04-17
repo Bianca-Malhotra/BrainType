@@ -1,25 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { db, auth } from '../firebase';
-import { doc, getDoc } from 'firebase/firestore';
-import { User as FirebaseUser } from 'firebase/auth';
 import { motion } from 'framer-motion';
 import { User as UserIcon, Mail, Calendar, Award, Zap, Target, ChevronLeft, LogOut } from 'lucide-react';
-
-interface UserMetrics {
-  avgWpm: number;
-  maxWpm: number;
-  avgAccuracy: number;
-  totalTests: number;
-  lastUpdated: any;
-}
+import { AppUser } from '../types/auth';
+import { getUserMetrics, UserMetrics } from '../services/localDataService';
 
 interface ProfileProps {
-  user: FirebaseUser | null;
+  user: AppUser | null;
   onBack: () => void;
+  onLogout: () => void;
   theme: string;
 }
 
-export default function Profile({ user, onBack, theme }: ProfileProps) {
+export default function Profile({ user, onBack, onLogout, theme }: ProfileProps) {
   const [metrics, setMetrics] = useState<UserMetrics | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -31,15 +23,15 @@ export default function Profile({ user, onBack, theme }: ProfileProps) {
   const innerCardBg = isDark ? 'bg-violet-900/10 border-white/10' : 'bg-violet-50/10 border-violet-900/10';
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      setMetrics(null);
+      setLoading(false);
+      return;
+    }
 
     const fetchMetrics = async () => {
       try {
-        const metricsRef = doc(db, 'metrics', user.uid);
-        const metricsSnap = await getDoc(metricsRef);
-        if (metricsSnap.exists()) {
-          setMetrics(metricsSnap.data() as UserMetrics);
-        }
+        setMetrics(getUserMetrics(user.id));
       } catch (error) {
         console.error("Error fetching metrics:", error);
       } finally {
@@ -53,7 +45,7 @@ export default function Profile({ user, onBack, theme }: ProfileProps) {
   if (!user) {
     return (
       <div className="text-center py-12">
-        <p className={textColor}>Please sign in with Google to view your profile.</p>
+        <p className={textColor}>Please sign in to view your profile.</p>
         <button onClick={onBack} className="mt-4 text-solar-blue hover:underline">Go Back</button>
       </div>
     );
@@ -78,10 +70,10 @@ export default function Profile({ user, onBack, theme }: ProfileProps) {
         <div className="md:col-span-1 space-y-6">
           <div className={`rounded-3xl p-8 text-center border ${cardBg}`}>
             <div className="relative inline-block mb-6">
-              {user.photoURL ? (
+              {user.picture ? (
                 <img 
-                  src={user.photoURL} 
-                  alt={user.displayName || 'User'} 
+                  src={user.picture} 
+                  alt={user.name || 'User'} 
                   className="w-24 h-24 rounded-full border-4 border-solar-blue/20 p-1"
                   referrerPolicy="no-referrer"
                 />
@@ -92,7 +84,7 @@ export default function Profile({ user, onBack, theme }: ProfileProps) {
               )}
               <div className="absolute bottom-1 right-1 w-6 h-6 bg-solar-cyan border-4 border-solar-navy rounded-full"></div>
             </div>
-            <h2 className={`text-2xl font-black mb-1 tracking-tighter ${textColor}`}>{user.displayName || 'Typist'}</h2>
+            <h2 className={`text-2xl font-black mb-1 tracking-tighter ${textColor}`}>{user.name || 'Typist'}</h2>
             <p className={`text-sm mb-8 font-medium ${mutedColor}`}>{user.email}</p>
             
             <div className={`space-y-4 text-left text-xs border-t pt-8 ${isDark ? 'border-white/10' : 'border-solar-blue/10'}`}>
@@ -102,12 +94,12 @@ export default function Profile({ user, onBack, theme }: ProfileProps) {
               </div>
               <div className={`flex items-center gap-3 ${mutedColor}`}>
                 <Calendar size={14} className="text-solar-blue" />
-                <span>Joined {new Date(user.metadata.creationTime!).toLocaleDateString()}</span>
+                <span>Joined {new Date(user.createdAt).toLocaleDateString()}</span>
               </div>
             </div>
 
             <button 
-              onClick={() => auth.signOut()}
+              onClick={onLogout}
               className="mt-10 w-full flex items-center justify-center gap-2 border border-solar-red/30 text-solar-red py-3 rounded-2xl text-sm font-bold hover:bg-solar-red/10 transition-all active:scale-95"
             >
               <LogOut size={16} />

@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ChevronLeft, Info, Zap, Shield, Github, Linkedin, Globe, Target, BarChart3 } from 'lucide-react';
+import ScrollReveal from './ScrollReveal';
 
 interface AboutProps {
   onBack: () => void;
@@ -19,68 +20,68 @@ export default function About({ onBack, theme }: AboutProps) {
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="max-w-4xl mx-auto px-4 py-8"
+      className="max-w-7xl mx-auto px-6 md:px-8 py-12"
     >
       <button 
         onClick={onBack}
-        className={`flex items-center gap-2 transition-colors mb-8 group ${textColor} ${hoverColor}`}
+        className={`flex items-center gap-2 transition-colors mb-12 group ${textColor} ${hoverColor}`}
       >
         <ChevronLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
         <span>Back to Test</span>
       </button>
 
-      <div className="space-y-12">
-        <div className="text-center">
+      <div className="space-y-16 md:space-y-20">
+        <ScrollReveal className="text-center">
           <div className="inline-block p-3 bg-solar-blue/10 rounded-2xl mb-4">
             <Info size={32} className="text-solar-blue" />
           </div>
-          <h2 className={`text-4xl font-bold mb-4 tracking-tight ${textColor}`}>About BrainType</h2>
-          <p className={`max-w-2xl mx-auto leading-relaxed ${mutedColor}`}>
+          <h2 className={`text-4xl md:text-5xl font-bold mb-6 tracking-tight ${textColor}`}>About BrainType</h2>
+          <p className={`max-w-3xl mx-auto leading-relaxed text-lg ${mutedColor}`}>
             BrainType is a high-performance typing gym for developers. 
             We go beyond standard typing clones to train your speed, 
             accuracy, and technical vocabulary under pressure.
           </p>
-        </div>
+        </ScrollReveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className={`rounded-2xl p-6 border ${cardBg}`}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
+          <ScrollReveal className={`rounded-3xl p-8 border ${cardBg}`} delay={0.05}>
             <Zap size={24} className="text-solar-blue mb-4" />
-            <h3 className={`text-lg font-bold mb-2 ${textColor}`}>Technical Modes</h3>
+            <h3 className={`text-lg font-bold mb-3 ${textColor}`}>Technical Modes</h3>
             <p className={`text-sm leading-relaxed ${subMutedColor}`}>
               From Code Snippets to Industry Facts, train your ability to process and type technical information instantly.
             </p>
-          </div>
+          </ScrollReveal>
 
-          <div className={`rounded-2xl p-6 border ${cardBg}`}>
+          <ScrollReveal className={`rounded-3xl p-8 border ${cardBg}`} delay={0.12}>
             <BarChart3 size={24} className="text-solar-blue mb-4" />
-            <h3 className={`text-lg font-bold mb-2 ${textColor}`}>Performance Analytics</h3>
+            <h3 className={`text-lg font-bold mb-3 ${textColor}`}>Performance Analytics</h3>
             <p className={`text-sm leading-relaxed ${subMutedColor}`}>
               Get real-time feedback on your WPM and accuracy, with historical tracking to visualize your growth over time.
             </p>
-          </div>
+          </ScrollReveal>
 
-          <div className={`rounded-2xl p-6 border ${cardBg}`}>
+          <ScrollReveal className={`rounded-3xl p-8 border ${cardBg}`} delay={0.18}>
             <Shield size={24} className="text-solar-blue mb-4" />
-            <h3 className={`text-lg font-bold mb-2 ${textColor}`}>Zen & Aura</h3>
+            <h3 className={`text-lg font-bold mb-3 ${textColor}`}>Zen & Aura</h3>
             <p className={`text-sm leading-relaxed ${subMutedColor}`}>
-              Focus with Zen Mode and a dynamic "Aura" that pulses faster as your WPM increases.
+              Train without distractions using Zen Mode. Extra UI fades away while typing, and a simple timer helps you stay in rhythm.
             </p>
-          </div>
+          </ScrollReveal>
 
-          <div className={`rounded-2xl p-6 border ${cardBg}`}>
+          <ScrollReveal className={`rounded-3xl p-8 border ${cardBg}`} delay={0.25}>
             <Target size={24} className="text-solar-blue mb-4" />
-            <h3 className={`text-lg font-bold mb-2 ${textColor}`}>Key Insights</h3>
+            <h3 className={`text-lg font-bold mb-3 ${textColor}`}>Key Insights</h3>
             <p className={`text-sm leading-relaxed ${subMutedColor}`}>
               Identify "Problem Keys" that slow you down. We track per-key delay and error rates for deep analysis.
             </p>
-          </div>
+          </ScrollReveal>
         </div>
 
-        <div className={`border-t pt-12 ${isDark ? 'border-white/20' : 'border-violet-900/20'}`}>
-          <h3 className={`text-sm font-bold uppercase tracking-widest mb-4 text-center ${textColor}`}>Developer</h3>
-          <p className={`text-center text-xl font-black mb-8 ${textColor}`}>Bianca Malhotra</p>
+        <ScrollReveal className={`border-t pt-16 ${isDark ? 'border-white/20' : 'border-violet-900/20'}`}>
+          <h3 className={`text-sm font-bold uppercase tracking-widest mb-5 text-center ${textColor}`}>Developer</h3>
+          <p className={`text-center text-2xl font-black mb-10 ${textColor}`}>Bianca Malhotra</p>
           
-          <div className="flex justify-center gap-8 mb-12">
+          <div className="flex flex-wrap justify-center gap-x-10 gap-y-4 mb-14">
             <a href="https://github.com/Bianca-Malhotra" target="_blank" rel="noopener noreferrer" className={`flex items-center gap-2 transition-colors ${textColor} ${hoverColor}`}>
               <Github size={20} />
               <span>GitHub</span>
@@ -95,25 +96,25 @@ export default function About({ onBack, theme }: AboutProps) {
             </a>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto text-left">
-            <div className={`p-6 rounded-2xl border ${cardBg}`}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 max-w-5xl mx-auto text-left">
+            <div className={`p-8 rounded-3xl border ${cardBg}`}>
               <h4 className={`text-xs font-bold uppercase tracking-widest mb-3 ${textColor}`}>Terms of Service</h4>
-              <p className={`text-[10px] leading-relaxed ${subMutedColor}`}>
+              <p className={`text-xs leading-relaxed ${subMutedColor}`}>
                 By using BrainType, you agree to our training protocols. All content is for educational purposes. We prioritize fair use and intellectual growth.
               </p>
             </div>
-            <div className={`p-6 rounded-2xl border ${cardBg}`}>
+            <div className={`p-8 rounded-3xl border ${cardBg}`}>
               <h4 className={`text-xs font-bold uppercase tracking-widest mb-3 ${textColor}`}>Privacy Policy</h4>
-              <p className={`text-[10px] leading-relaxed ${subMutedColor}`}>
+              <p className={`text-xs leading-relaxed ${subMutedColor}`}>
                 Your data is yours. We store your session results securely to track your progress. We never sell your cognitive data to third parties.
               </p>
             </div>
           </div>
-        </div>
+        </ScrollReveal>
 
-        <div className={`text-center text-[10px] uppercase tracking-widest ${isDark ? 'text-white/40' : 'text-violet-900/40'}`}>
+        <ScrollReveal className={`text-center text-[10px] uppercase tracking-widest ${isDark ? 'text-white/40' : 'text-violet-900/40'}`}>
           Version 2.0.0 • © 2026 Bianca Malhotra • Built with ❤️ for the Cognitive Mind
-        </div>
+        </ScrollReveal>
       </div>
     </motion.div>
   );

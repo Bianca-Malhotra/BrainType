@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { db } from '../firebase';
-import { collection, query, where, orderBy, limit, getDocs } from 'firebase/firestore';
-import { User as FirebaseUser } from 'firebase/auth';
+import { AppUser } from '../types/auth';
+import { getSessionsByUser } from '../services/localDataService';
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   AreaChart, Area, BarChart, Bar, Cell 
@@ -12,12 +11,12 @@ import { TrendingUp, Award, Target, Activity, Loader2, ChevronLeft } from 'lucid
 interface Session {
   wpm: number;
   accuracy: number;
-  timestamp: any;
+  timestamp: number;
   testLength: number;
 }
 
 interface AnalyticsProps {
-  user: FirebaseUser | null;
+  user: AppUser | null;
   onBack: () => void;
   theme: string;
 }
@@ -33,24 +32,16 @@ export default function Analytics({ user, onBack, theme }: AnalyticsProps) {
   const chartBg = isDark ? 'bg-violet-900/10 border-white/10' : 'bg-violet-50/10 border-violet-900/10';
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      setSessions([]);
+      setLoading(false);
+      return;
+    }
 
     const fetchSessions = async () => {
       try {
-        const q = query(
-          collection(db, 'sessions'),
-          where('uid', '==', user.uid),
-          orderBy('timestamp', 'desc'),
-          limit(50)
-        );
-        const querySnapshot = await getDocs(q);
-        const sessionData = querySnapshot.docs.map(doc => ({
-          ...doc.data(),
-          timestamp: doc.data().timestamp?.toDate() || new Date()
-        })) as Session[];
-        
-        // Reverse to show chronological order in chart
-        setSessions(sessionData.reverse());
+        const sessionData = getSessionsByUser(user.id).slice(-50);
+        setSessions(sessionData);
       } catch (error) {
         console.error("Error fetching sessions:", error);
       } finally {
@@ -92,7 +83,7 @@ export default function Analytics({ user, onBack, theme }: AnalyticsProps) {
     index: i + 1,
     wpm: s.wpm,
     accuracy: s.accuracy,
-    date: s.timestamp.toLocaleDateString()
+    date: new Date(s.timestamp).toLocaleDateString()
   }));
 
   const chartColors = {

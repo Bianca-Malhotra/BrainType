@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Zap, Cpu, Target, ArrowRight, Shield, BarChart3, MessageSquare, Code2 } from 'lucide-react';
+import ScrollReveal from './ScrollReveal';
 
 interface HomeProps {
   onStart: () => void;
@@ -15,9 +16,9 @@ export default function Home({ onStart, onNavigate, theme }: HomeProps) {
   const cardBg = isDark ? 'bg-violet-900/10 border-white/10' : 'bg-violet-50/10 border-violet-900/10';
 
   return (
-    <div className="space-y-32">
+    <div className="space-y-40 md:space-y-44">
       {/* Hero Section */}
-      <section className="max-w-6xl mx-auto px-4 pt-20 pb-32 flex flex-col items-center text-center">
+      <section className="max-w-7xl mx-auto px-6 md:px-8 pt-24 md:pt-28 pb-40 flex flex-col items-center text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -31,7 +32,7 @@ export default function Home({ onStart, onNavigate, theme }: HomeProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className={`text-6xl md:text-8xl font-black tracking-tighter leading-[0.9] mb-8 ${textColor}`}
+          className={`text-6xl md:text-8xl font-black tracking-tighter leading-[0.95] mb-10 ${textColor}`}
         >
           Train how you <span className="text-solar-blue">think</span>,<br />
           not just how you <span className="text-solar-blue">code</span>.
@@ -41,7 +42,7 @@ export default function Home({ onStart, onNavigate, theme }: HomeProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className={`max-w-2xl text-xl md:text-2xl leading-relaxed mb-12 ${mutedColor}`}
+          className={`max-w-3xl text-xl md:text-2xl leading-relaxed mb-14 ${mutedColor}`}
         >
           The high-performance typing gym for developers. Master speed, 
           accuracy, and focus under pressure.
@@ -51,7 +52,7 @@ export default function Home({ onStart, onNavigate, theme }: HomeProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="flex flex-wrap justify-center gap-6"
+          className="flex flex-wrap justify-center gap-8"
         >
           <button 
             onClick={onStart}
@@ -70,9 +71,9 @@ export default function Home({ onStart, onNavigate, theme }: HomeProps) {
       </section>
 
       {/* Feature Grid */}
-      <section className="max-w-6xl mx-auto px-4 py-32 border-t border-solar-blue/10">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-          <div className="space-y-4">
+      <section className="max-w-7xl mx-auto px-6 md:px-8 py-36 border-t border-solar-blue/10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12 lg:gap-14">
+          <ScrollReveal className={`space-y-5 p-6 md:p-8 rounded-3xl border ${cardBg}`} delay={0.05}>
             <div className="w-12 h-12 bg-solar-blue/10 rounded-xl flex items-center justify-center text-solar-blue">
               <Zap size={24} />
             </div>
@@ -80,8 +81,8 @@ export default function Home({ onStart, onNavigate, theme }: HomeProps) {
             <p className={`leading-relaxed ${mutedColor}`}>
               Push your limits with high-speed typing drills designed for technical vocabulary and syntax.
             </p>
-          </div>
-          <div className="space-y-4">
+          </ScrollReveal>
+          <ScrollReveal className={`space-y-5 p-6 md:p-8 rounded-3xl border ${cardBg}`} delay={0.15}>
             <div className="w-12 h-12 bg-solar-blue/10 rounded-xl flex items-center justify-center text-solar-blue">
               <Target size={24} />
             </div>
@@ -89,8 +90,8 @@ export default function Home({ onStart, onNavigate, theme }: HomeProps) {
             <p className={`leading-relaxed ${mutedColor}`}>
               Eliminate typos in your code and documentation with precision-focused training modes.
             </p>
-          </div>
-          <div className="space-y-4">
+          </ScrollReveal>
+          <ScrollReveal className={`space-y-5 p-6 md:p-8 rounded-3xl border ${cardBg}`} delay={0.25}>
             <div className="w-12 h-12 bg-solar-blue/10 rounded-xl flex items-center justify-center text-solar-blue">
               <BarChart3 size={24} />
             </div>
@@ -98,13 +99,14 @@ export default function Home({ onStart, onNavigate, theme }: HomeProps) {
             <p className={`leading-relaxed ${mutedColor}`}>
               Track your progress with detailed performance metrics and predictive forecasting.
             </p>
-          </div>
+          </ScrollReveal>
         </div>
       </section>
 
       {/* Social Proof / Stats */}
-      <section className={`py-32 ${isDark ? 'bg-white/5' : 'bg-solar-blue/5'}`}>
-        <div className="max-w-6xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
+      <ScrollReveal>
+        <section className={`py-36 ${isDark ? 'bg-white/5' : 'bg-solar-blue/5'}`}>
+        <div className="max-w-7xl mx-auto px-6 md:px-8 grid grid-cols-2 md:grid-cols-4 gap-12 md:gap-16 text-center">
           <div>
             <div className="text-4xl font-black text-solar-blue mb-2">10k+</div>
             <div className={`text-xs uppercase tracking-widest font-bold ${mutedColor}`}>Sessions</div>
@@ -122,10 +124,12 @@ export default function Home({ onStart, onNavigate, theme }: HomeProps) {
             <div className={`text-xs uppercase tracking-widest font-bold ${mutedColor}`}>Available</div>
           </div>
         </div>
-      </section>
+        </section>
+      </ScrollReveal>
 
       {/* CTA Section */}
-      <section className="max-w-4xl mx-auto px-4 py-32 text-center">
+      <ScrollReveal>
+        <section className="max-w-5xl mx-auto px-6 md:px-8 py-36 text-center">
         <h2 className={`text-4xl md:text-6xl font-black tracking-tighter mb-8 ${textColor}`}>
           Ready to level up your<br />
           <span className="text-solar-blue">developer communication?</span>
@@ -136,7 +140,8 @@ export default function Home({ onStart, onNavigate, theme }: HomeProps) {
         >
           Enter the Gym
         </button>
-      </section>
+        </section>
+      </ScrollReveal>
     </div>
   );
 }
